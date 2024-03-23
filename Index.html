@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta auth="Tibor Boros">
+	<title>Route Tracker</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+		integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+	<link rel="stylesheet" href="./src/Style.css">
+	<script src="https://kit.fontawesome.com/1c345fd174.js" crossorigin="anonymous"></script>
+	<script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore-compat.js"></script>
+</head>
+
+<body data-bs-theme="dark">
+	<nav class="navbar navbar-expand-lg">
+		<div class="container-fluid">
+
+			<a class="navbar-brand" href="#">
+				<img src="./src/Logo.png" alt="Logo" width="50" height="30">
+				Útvonal Nyilvántartó</a>
+			<button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+				data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+				aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			<div class="collapse navbar-collapse" id="navbarSupportedContent">
+				<ul class="navbar-nav ms-auto">
+					<li class="nav-item">
+						<button id="theme-toggle" class="btn btn-sm btn-outline-secondary mt-3">Világos/Sötét</button>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</nav>
+	<ul class="nav nav-tabs" role="tablist">
+		<li class="nav-item">
+			<a class="nav-link active" id="record-tab" data-bs-toggle="tab" data-bs-target="#record-panel" role="tab"
+				aria-controls="record-panel" aria-selected="true">
+				<i class="fas fa-edit"></i>
+				Útvonal Rögzítés</a>
+		</li>
+		<li class="nav-item">
+			<a class="nav-link" id="view-data-tab" data-bs-toggle="tab" data-bs-target="#view-data-panel" role="tab"
+				aria-controls="view-data-panel" aria-selected="false">
+				<i class="fas fa-list"></i>
+				Útvonalak Megtekintése</a>
+		</li>
+		<li class="nav-item">
+			<a class="nav-link" id="summary-tab" data-bs-toggle="tab" data-bs-target="#summary-panel" role="tab"
+				aria-controls="summary-panel" aria-selected="false">
+				<i class="fas fa-chart-line"></i>
+				Összegzés</a>
+		</li>
+	</ul>
+
+	<div class="tab-content">
+		<div class="tab-pane fade show active" id="record-panel" role="tabpanel" aria-labelledby="record-tab">
+
+
+			<div class="container mt-5">
+				<div class="row">
+					<div class="col-md-8 mx-auto">
+						<form id="route-recording-form">
+							<div class="card">
+
+								<div class="card-header">Útvonal Rögzítés</div>
+
+								<div class="card-body">
+									<div class="row">
+										<div class="mb-3">
+
+											<fieldset class="border p-2">
+												<legend class="form-label">Gépjármű</legend>
+												<div class="row">
+
+													<div class="mb-3">
+														<label for="regPlate" class="form-label">Rendszám</label>
+														<input type="text" class="form-control" id="regPlate"
+															placeholder="Kérem adja meg a gépjármű rendszámát!">
+													</div>
+
+													<div class="mb-3">
+														<label for="vehicleType" class="form-label">Jármű típusa</label>
+														<input type="text" class="form-control" id="vehicleType"
+															placeholder="Autó, Kombinált jármű, Kamion, stb.">
+													</div>
+
+													<div class="mb-3">
+														<label for="consumption" class="form-label">Fogyasztás
+															(L/100km)</label>
+														<input type="number" step="0.01" min="0" class="form-control"
+															id="consumption" placeholder="pl., 7.5">
+													</div>
+
+												</div>
+											</fieldset>
+										</div>
+
+									</div>
+
+									<div class="row">
+										<div class="mb-3">
+											<fieldset class="border p-2">
+												<legend class="form-label">Honnan</legend>
+												<div class="row">
+
+													<div class="col-md-6 mb-3">
+														<label for="fromCity" class="form-label">Város</label>
+														<input type="text" class="form-control" id="fromCity"
+															placeholder="Kérem adja meg a város nevét!">
+													</div>
+
+													<div class="col-md-6 mb-3">
+														<label for="fromStreet" class="form-label">Utca</label>
+														<input type="text" class="form-control" id="fromStreet"
+															placeholder="Kérem adja meg az utca nevét!">
+													</div>
+												</div>
+
+												<div class="row">
+													<div class="col-md-6 mb-3">
+														<label for="fromHouseNumber" class="form-label">Házszám</label>
+														<input type="text" class="form-control" id="fromHouseNumber"
+															placeholder="Kérem adja meg a házszámot!">
+													</div>
+
+													<div class="col-md-6 mb-3">
+														<label for="fromText" class="form-label">Opcionális adat</label>
+														<input type="text" class="form-control" id="fromText"
+															placeholder="Egyéb informació">
+													</div>
+												</div>
+											</fieldset>
+										</div>
+
+										<div class="mb-3">
+											<fieldset class="border p-2">
+												<legend class="form-label">Hova</legend>
+
+												<div class="row">
+													<div class="col-md-6 mb-3">
+														<label for="toCity" class="form-label">Város</label>
+														<input type="text" class="form-control" id="toCity"
+															placeholder="Kérem adja meg a város nevét!">
+													</div>
+
+													<div class="col-md-6 mb-3">
+														<label for="toStreet" class="form-label">Utca</label>
+														<input type="text" class="form-control" id="toStreet"
+															placeholder="Kérem adja meg az utca nevét!">
+													</div>
+												</div>
+
+												<div class="row">
+													<div class="col-md-6 mb-3">
+														<label for="toHouseNumber" class="form-label">Házszám</label>
+														<input type="text" class="form-control" id="toHouseNumber"
+															placeholder="Kérem adja meg a házszámot!">
+													</div>
+
+													<div class="col-md-6 mb-3">
+														<label for="toText" class="form-label">Opcionális adat</label>
+														<input type="text" class="form-control" id="toText"
+															placeholder="Egyéb informació">
+													</div>
+													<div class="mb-3">
+														<label for="toPartnerName" class="form-label">Partner neve
+														</label>
+														<input type="text" class="form-control" id="toPartnerName"
+															placeholder="Kérem adja meg a partner nevét!">
+													</div>
+												</div>
+											</fieldset>
+										</div>
+
+									</div>
+									<div class="mb-3">
+										<label for="dateTime" class="form-label">Dátum</label>
+										<input type="datetime-local" class="form-control" id="dateTime">
+									</div>
+
+									<div class="mb-3">
+										<label for="distance" class="form-label">Távolság (km)</label>
+										<input type="number" class="form-control" id="distance" min="0">
+									</div>
+									<div class="d-grid gap-2 col-6 mx-auto">
+										<button type="submit" class="btn btn-primary align-middle">Útvonal
+											Rögzítés</button>
+									</div>
+
+								</div>
+							</div>
+						</form>
+						<br>
+						<br>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+		<div class="tab-pane fade" id="view-data-panel" role="tabpanel" aria-labelledby="view-data-tab">
+			<div id="view-data-panel">
+				<div class="container mt-5">
+					<div class="mb-3">
+						<label for="vehicleFilter" class="form-label">Szűrés rendszám által:</label>
+						<select class="form-select" id="vehicleFilter">
+							<option value="">Összes rendszám</option>
+						</select>
+					</div>
+					<div id="routeTableContainer"></div>
+					<br>
+					<br>
+				</div>
+			</div>
+		</div>
+
+		<div class="tab-pane fade" id="summary-panel" role="tabpanel" aria-labelledby="summary-tab">
+
+			<div id="summary-panel">
+			</div>
+		</div>
+	</div>
+
+
+
+
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+		integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+		crossorigin="anonymous"></script>
+	<script src="./src/main.js"></script>
+
+</body>
+
+<footer class="bg-body-tertiary text-center text-lg-start fixed-bottom">
+	<!-- Copyright -->
+	<div class="text-center p-1" style="background-color: rgba(0, 0, 0, 0.05);">
+		© 2024 All rights reseved. Created by Tibor Boros
+	</div>
+	<!-- Copyright -->
+</footer>
+
+</html>
